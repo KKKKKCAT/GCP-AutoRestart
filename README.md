@@ -41,6 +41,7 @@ pip install google-cloud-compute
 **腳本代碼**
 ```
 import os
+import time
 from google.cloud import compute_v1
 
 def start_instance_if_not_running(project_id, zone, instance_name):
@@ -63,11 +64,11 @@ def start_instance_if_not_running(project_id, zone, instance_name):
         return "ERROR"
 
 def wait_for_operation(project_id, zone, instance_name, initial_operation_name, timeout=300):
+    current_operation_name = initial_operation_name  # 初始化变量
     try:
         operation_client = compute_v1.ZoneOperationsClient()
         instance_client = compute_v1.InstancesClient()
         start_time = time.time()
-        current_operation_name = initial_operation_name
 
         while True:
             result = operation_client.get(project=project_id, zone=zone, operation=current_operation_name)
@@ -121,7 +122,7 @@ def list_and_start_instances(project_id):
 
 if __name__ == "__main__":
     credentials_and_projects = [
-        {"credentials": "GCP.json", "project_id": "xxxxxxxxxxxxx"},
+        {"credentials": "GCP.json", "project_id": "xxxxxxxxx"},
     ]
 
     for item in credentials_and_projects:
@@ -136,7 +137,9 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error processing project {item['project_id']}: {e}")
 
+    # 清理环境变量
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ""
+
 ```
 
 **設置**
